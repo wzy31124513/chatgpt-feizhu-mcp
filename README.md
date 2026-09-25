@@ -8,7 +8,9 @@ This is an independent community project, not an official Feizhu, Alibaba, or Op
 
 ## What it provides
 
-Five read-only MCP tools: `search_flights`, `search_hotels`, `search_trains`, `search_pois`, and `search_travel`. Results retain the FlyAI CLI's structured data, including links, images, and `systemMessage` when present.
+Eight read-only MCP tools cover the commands in FlyAI CLI 1.0.16: `search_flights`, `search_hotels`, `search_trains`, `search_pois`, `search_travel` (keyword search), `ai_search` (semantic search), `search_marriott_packages`, and `search_marriott_hotels`. Results retain the FlyAI CLI's structured data, including links, images, and `systemMessage` when present.
+
+`search_hotels` calls the CLI's `search-hotel` command and returns its JSON without removing room or rate fields. The CLI currently exposes hotel search results, but no hotel detail or room-rate command. A hotel's displayed minimum price therefore does not establish a bookable room price, breakfast inclusion, cancellation policy, or taxes. Those details require an upstream CLI capability before this bridge can expose them.
 
 Requirements: Node.js 20+, the `@fly-ai/flyai-cli` executable, and a FlyAI API Key configured for the OS user running this server to receive full results. Connecting from ChatGPT web also requires a ChatGPT account or workspace that supports custom MCP apps and either a public HTTPS endpoint or a private Secure MCP Tunnel.
 
@@ -50,7 +52,7 @@ Choose one connection method:
 1. **Private:** Use [OpenAI Secure MCP Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels) to connect ChatGPT to `http://127.0.0.1:8787/mcp` without opening an inbound port. Create a tunnel in your OpenAI Platform organization, install `tunnel-client`, and configure a local client profile using the [official onboarding guide](https://github.com/openai/tunnel-client/blob/master/docs/onboarding.md). Keep its OpenAI runtime key in a local, permission-restricted file such as the ignored `.env.local`, never in this repository. The FlyAI and OpenAI keys serve different purposes.
 2. **Public HTTPS:** Point a domain with a valid TLS certificate to this server through a reverse proxy. [The Nginx example](deploy/nginx.conf.example) forwards `/mcp` to loopback and applies basic rate limiting. Do not expose port 8787 directly. This bridge does not authenticate incoming MCP users; put an access-controlled gateway or an MCP-compatible OAuth provider in front of it before sharing the endpoint. Otherwise, anyone with access can spend your FlyAI quota.
 
-In ChatGPT web, if your plan or workspace provides custom MCP apps, create one in developer mode and connect it to the HTTPS `/mcp` URL or your tunnel, then scan the five tools. Follow [OpenAI's custom MCP app instructions](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt) for the current interface. A GitHub repository alone does not install the app in ChatGPT or host the server.
+In ChatGPT web, if your plan or workspace provides custom MCP apps, create one in developer mode and connect it to the HTTPS `/mcp` URL or your tunnel, then scan the eight tools. Follow [OpenAI's custom MCP app instructions](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt) for the current interface. A GitHub repository alone does not install the app in ChatGPT or host the server.
 
 ## Optional user services (Linux)
 

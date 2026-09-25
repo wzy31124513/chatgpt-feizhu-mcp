@@ -8,7 +8,9 @@
 
 ## 功能与要求
 
-提供五个只读 MCP 工具：`search_flights`（机票）、`search_hotels`（酒店）、`search_trains`（火车票）、`search_pois`（景点与目的地）和 `search_travel`（旅行关键词搜索）。结果保留 FlyAI CLI 的结构化数据，以及其中的链接、图片和 `systemMessage`。
+提供八个只读 MCP 工具，覆盖 FlyAI CLI 1.0.16 的命令：`search_flights`（机票）、`search_hotels`（酒店）、`search_trains`（火车票）、`search_pois`（景点与目的地）、`search_travel`（关键词搜索）、`ai_search`（语义搜索）、`search_marriott_packages`（万豪酒店套餐）和 `search_marriott_hotels`（万豪酒店）。结果保留 FlyAI CLI 的结构化数据，以及其中的链接、图片和 `systemMessage`。
+
+`search_hotels` 调用 CLI 的 `search-hotel` 命令，原样返回 JSON，不会删掉房型或价格字段。目前 CLI 只提供酒店搜索，没有酒店详情或房型报价命令。因此酒店列表的最低展示价不能代表可预订房型的最终价格，也无法据此确认早餐、取消政策和税费。需要上游 CLI 先提供相应能力，桥接服务才能接入。
 
 需要 Node.js 20+、`@fly-ai/flyai-cli` 可执行程序，以及为**运行本服务的同一个系统用户**配置的 FlyAI API Key，才能获取完整结果。若要连接 ChatGPT 网页版，还需要支持自定义 MCP 应用的 ChatGPT 账号或工作区，以及公网 HTTPS 端点或私有 Secure MCP Tunnel。
 
@@ -50,7 +52,7 @@ npm start
 1. **私有连接：** 使用 [OpenAI Secure MCP Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)，让 ChatGPT 访问 `http://127.0.0.1:8787/mcp`，无需开放入站端口。在 OpenAI Platform 组织中创建隧道，安装 `tunnel-client`，并按[官方接入指南](https://github.com/openai/tunnel-client/blob/master/docs/onboarding.md)配置本地 profile。OpenAI 运行密钥应保存在本地且限制读取权限，例如被忽略的 `.env.local`，不要提交到仓库。FlyAI 密钥与 OpenAI 密钥用途不同。
 2. **公网 HTTPS：** 为域名配置有效 TLS 证书，通过反向代理把 `/mcp` 转发到本地服务。[Nginx 示例](deploy/nginx.conf.example)包含基本限流。不要直接开放 8787 端口。本桥接服务不验证 MCP 调用者身份；向他人开放前，需要在前面加访问控制网关或兼容 MCP 的 OAuth 服务，否则能够访问端点的人就能消耗你的 FlyAI 配额。
 
-如果你的 ChatGPT 账号或工作区支持自定义 MCP 应用，可在 ChatGPT 网页版的开发者模式中创建应用，填入 HTTPS `/mcp` 地址或选择隧道，再扫描五个工具。界面入口以 [OpenAI 的自定义 MCP 应用说明](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt)为准。公开 GitHub 仓库本身不会把应用安装到 ChatGPT，也不会替你托管服务。
+如果你的 ChatGPT 账号或工作区支持自定义 MCP 应用，可在 ChatGPT 网页版的开发者模式中创建应用，填入 HTTPS `/mcp` 地址或选择隧道，再扫描八个工具。界面入口以 [OpenAI 的自定义 MCP 应用说明](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt)为准。公开 GitHub 仓库本身不会把应用安装到 ChatGPT，也不会替你托管服务。
 
 ## 可选：Linux 用户服务
 
