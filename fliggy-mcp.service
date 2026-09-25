@@ -1,0 +1,19 @@
+[Unit]
+Description=Fliggy CLI MCP bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/chatgpt-feizhu-mcp
+ExecStart=/usr/bin/env node %h/chatgpt-feizhu-mcp/dist/index.js
+Environment=HOST=127.0.0.1
+Environment=PORT=8787
+Environment=FLYAI_BIN=flyai
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

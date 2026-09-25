@@ -1,0 +1,23 @@
+# Replace mcp.example.com with your domain after DNS points to this server.
+# Obtain and configure a TLS certificate with your existing Nginx/ACME setup.
+limit_req_zone $binary_remote_addr zone=fliggy_mcp:10m rate=30r/m;
+
+server {
+    listen 443 ssl http2;
+    server_name mcp.example.com;
+    ssl_certificate /etc/letsencrypt/live/mcp.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/mcp.example.com/privkey.pem;
+
+    location = /mcp {
+        limit_req zone=fliggy_mcp burst=10 nodelay;
+        proxy_pass http://127.0.0.1:8787;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_read_timeout 60s;
+        proxy_buffering off;
+    }
+    location = /health {
+        proxy_pass http://127.0.0.1:8787;
+    }
+}

@@ -1,0 +1,18 @@
+[Unit]
+Description=Fliggy MCP Secure Tunnel client
+After=network-online.target fliggy-mcp.service
+Wants=network-online.target
+Requires=fliggy-mcp.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/chatgpt-feizhu-mcp
+EnvironmentFile=%h/chatgpt-feizhu-mcp/.env.local
+ExecStart=/usr/bin/env tunnel-client run --profile fliggy-local
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
